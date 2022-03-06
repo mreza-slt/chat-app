@@ -4,7 +4,7 @@
   "description": "��#\u0000 \u0000c\u0000h\u0000a\u0000t\u0000-\u0000a\u0000p\u0000p\u0000\r\u0000 \u0000",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": {
@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/mreza-slt/chat-app/issues"
   },
-  "homepage": "https://github.com/mreza-slt/chat-app#readme"
+  "homepage": "https://github.com/mreza-slt/chat-app#readme",
+  "dependencies": {
+    "apollo-server": "^3.6.3",
+    "graphql": "^16.3.0",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15",
+    "sequelize": "^6.17.0"
+  }
 }
