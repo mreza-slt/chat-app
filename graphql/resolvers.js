@@ -22,7 +22,7 @@ module.exports = {
       let errors = {};
 
       try {
-        // Todo: validate input data
+        // validate input data
         if (email.trim() === "") errors.email = "Email must not be empty";
         if (username.trim() === "")
           errors.username = "Username must not be empty";
@@ -31,17 +31,20 @@ module.exports = {
         if (confirmPassword.trim() === "")
           errors.confirmPassword = "repeat must not be empty";
 
-        // Todo: check email / username is exists
-        const userByUsername = await User.findOne({ where: { username } });
-        const userByEmail = await User.findOne({ where: { email } });
+        if (password !== confirmPassword)
+          errors.confirmPassword = "passwords must match";
 
-        if (userByUsername) errors.username = `${username} is taken`;
-        if (userByEmail) errors.email = `${email} is taken`;
+        // // check email / username is exists
+        // const userByUsername = await User.findOne({ where: { username } });
+        // const userByEmail = await User.findOne({ where: { email } });
+
+        // if (userByUsername) errors.username = `${username} is taken`;
+        // if (userByEmail) errors.email = `${email} is taken`;
 
         if (Object.keys(errors).length > 0) {
           throw errors;
         }
-        console.log(errors);
+
         // hash password
         password = await bcrypt.hash(password, 6);
 
@@ -56,7 +59,14 @@ module.exports = {
         return user;
       } catch (err) {
         console.log(err);
-        throw new UserInputError("bad input", { errors: err });
+        if (err.name === "SequelizeUniqueConstraintError") {
+          err.errors.forEach(
+            (e) => (errors[e.path] = `${e.path} is already taken`)
+          );
+        } else if (err.name === "SequelizeValidationError") {
+          err.errors.forEach((e) => (errors[e.path] = e.message));
+        }
+        throw new UserInputError("bad input", { errors });
       }
     },
   },
