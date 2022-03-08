@@ -1,12 +1,10 @@
-// import React from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { useFormik } from "formik";
-// import * as Yup from "yup";
 import Input from "../common/Input";
 import { Link, useNavigate } from "react-router-dom";
-
 import { gql, useLazyQuery } from "@apollo/client";
 import { useState } from "react";
+import { useAuthDispatch, useAuthState } from "../context/auth";
 
 const LOGIN_USER = gql`
   query login($username: String!, $password: String!) {
@@ -28,13 +26,15 @@ const Login = () => {
 
   const [errors, setErrors] = useState({});
 
+  const dispatch = useAuthDispatch();
+
   const history = useNavigate();
   const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
     onError: (err) => {
       setErrors(err.graphQLErrors[0].extensions.errors);
     },
     onCompleted(data) {
-      localStorage.setItem("token", data.login.token);
+      dispatch({ type: "LOGIN", payload: data.login });
       history("/");
     },
   });
