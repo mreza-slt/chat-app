@@ -2,27 +2,15 @@ const bcrypt = require("bcryptjs");
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
-
-const { User } = require("../models");
 const { JWT_SECRET } = require("../config/env.json");
+const { Message, User } = require("../models");
 
 module.exports = {
   Query: {
-    getUsers: async (_, __, context) => {
+    getUsers: async (_, __, { user }) => {
       try {
-        let user;
-        if (context.req && context.req.headers.authorization) {
-          const token = context.req.headers.authorization.split("Bearer ")[1];
+        if (!user) throw new AuthenticationError("UnAthenticated")
 
-          jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
-            if (err) {
-              throw new AuthenticationError("Unauthenticated");
-            }
-            user = decodedToken;
-
-            console.log(user);
-          });
-        }
         const users = await User.findAll({
           where: { username: { [Op.ne]: user.username } },
         });
@@ -133,5 +121,31 @@ module.exports = {
         throw new UserInputError("bad input", { errors });
       }
     },
+    sendMessage: async (parent, { to, content }, { user }) => {
+      try {
+        if (!user) throw new AuthenticationError("UnAthenticated")
+
+        const recipient = await User.findOne({ where: { username: to } })
+
+        if (!recipient) {
+          throw new UserInputError("User not found")
+        }
+
+        if (content.trim() === "") {
+          throw UserInputError("Message is empty")
+        }
+
+        const message = await Message.create({
+          from: user.username,
+          to,
+          content
+        })
+
+        return message
+      } catch (err) {
+        console.log(err);
+        throw err
+      }
+    }
   },
 };
