@@ -57,7 +57,7 @@ module.exports = {
 
         if (!currectPassword) {
           errors.password = "password is incurrect";
-          throw new AuthenticationError("password is incurrect", { errors });
+          throw new UserInputError("password is incurrect", { errors });
         }
 
         const token = jwt.sign(
