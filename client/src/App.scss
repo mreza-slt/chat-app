@@ -1,10 +1,9 @@
 $blue: #1877f2;
 $green: #42b72a;
 $paragraph-margin-bottom: 0;
-$gray-600 : rgb(245,245,245);
+$gray-600: rgb(245, 245, 245);
 
 @import "~bootstrap/scss/bootstrap";
-
 
 body {
   min-height: 100vh;
@@ -14,4 +13,21 @@ body {
     rgba(253, 29, 29, 0.9) 50%,
     rgba(252, 176, 69, 0.9) 100%
   );
+}
+
+.user-div {
+  border-bottom: 1px solid rgb(230, 230, 230);
+  &:hover {
+    background-color: rgb(240, 240, 240);
+  }
+}
+
+.messages-box {
+  height: 500px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
