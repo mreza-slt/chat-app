@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import Input from "../common/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { gql, useLazyQuery } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthDispatch, useAuthState } from "../context/auth";
 
 const LOGIN_USER = gql`
@@ -18,6 +18,16 @@ const LOGIN_USER = gql`
 `;
 
 const Login = () => {
+  const history = useNavigate();
+
+  const { user } = useAuthState();
+
+  useEffect(() => {
+    if (user) {
+      history("/");
+    }
+  }, [user]);
+
   // formik 1:
   const initialValues = {
     username: "",
@@ -28,7 +38,6 @@ const Login = () => {
 
   const dispatch = useAuthDispatch();
 
-  const history = useNavigate();
   const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
     onError: (err) => {
       setErrors(err.graphQLErrors[0].extensions.errors);

@@ -6,7 +6,8 @@ import Input from "../common/Input";
 import { Link, useNavigate } from "react-router-dom";
 
 import { gql, useMutation } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuthState } from "../context/auth";
 
 const REGISTER_USER = gql`
   mutation register(
@@ -29,6 +30,16 @@ const REGISTER_USER = gql`
 `;
 
 const Register = () => {
+  const history = useNavigate();
+
+  const { user } = useAuthState();
+
+  useEffect(() => {
+    if (user) {
+      history("/");
+    }
+  }, [user]);
+
   // formik 1:
   const initialValues = {
     username: "",
@@ -39,7 +50,6 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
 
-  const history = useNavigate();
   const [registerUser, { loading }] = useMutation(REGISTER_USER, {
     update: (_) => {
       history("/login");
